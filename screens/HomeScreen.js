@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { Component} from 'react'
 import { View, StyleSheet } from 'react-native'
+import { connect } from 'react-redux'
+import { fetchIncidents } from '../actions/incidentsActions'
 import MapView, { Marker } from 'react-native-maps'
 import * as Location from 'expo-location'
 import HomeScreenButtons from '../components/HomeScreenButtons'
@@ -14,44 +16,65 @@ const styles = StyleSheet.create({
   }
 })
 
-const HomeScreen = ({ navigation }) => {
-  const [region, setRegion] = useState({
-    longitude: 0.0,
-    latitude: 0.0,
-    longitudeDelta: 0.1,
-    latitudeDelta: 0.15
-  })
-  
-  const [incidents, setIncidents] = useState([])
-
-  const fetchIncidents = () => {
-    fetch(`http://192.168.50.69:3000/incidents?latitude=${region.latitude}&longitude=${region.longitude}&radius=${region.longitudeDelta}`)
-    .then(resp => resp.json())
-    .then(json => setIncidents(json))
+class HomeScreen extends Component {
+  constructor() {
+    super()
+    this.map = React.createRef()
+    this.state = {
+      region: {
+        longitude: 0.0,
+        latitude: 0.0,
+        longitudeDelta: 0.1,
+        latitudeDelta: 0.15,
+      }
+    }
   }
 
-  useEffect(() => {
+  componentDidMount() {
     Location.requestPermissionsAsync()
     .then(resp => {
       if (resp.granted) {
-        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest})
+        Location.getLastKnownPositionAsync()
         .then(resp => {
-          setRegion(prevRegion => ({ ...prevRegion, longitude: resp.coords.longitude, latitude: resp.coords.latitude }))
+          this.map.current.setCamera({ center: { longitude: resp.coords.longitude, latitude: resp.coords.latitude }, altitude: 50000, zoom: 12 })
         })
       }
     })
-  }, [])
+  }
 
-  return (
-    <View style={styles.screen}>
-      <MapView onRegionChange={setRegion} region={region} style={{...StyleSheet.absoluteFill}}>
-        {incidents.map(incident => (
-          <HomeScreenMarker navigation={navigation} key={incident.id} incident={incident} />
-        ))}
-      </MapView>
-      <HomeScreenButtons fetchIncidents={fetchIncidents} />
-    </View>
-  )
+  handleRegionChange = region => {
+    this.setState({
+      region
+    })
+  }
+
+  handleSearchArea = () => {
+    const { latitude, longitude, latitudeDelta } = this.state.region
+    if (this.props.incidentsStatus !== 'loading') {
+      this.props.fetchIncidents(latitude, longitude, latitudeDelta)
+    }
+  }
+
+  render() {
+    const { navigation, incidents } = this.props
+    return (
+      <View style={styles.screen}>
+        <MapView loadingEnabled ref={this.map} onRegionChange={this.handleRegionChange} style={{...StyleSheet.absoluteFill}}>
+          {incidents.map(incident => (
+            <HomeScreenMarker navigation={navigation} key={incident.id} incident={incident} />
+          ))}
+        </MapView>
+        <HomeScreenButtons handleSearchArea={this.handleSearchArea} />
+      </View>
+    )
+  }
 }
 
-export default HomeScreen
+const mapStateToProps = state => {
+  return {
+    incidents: state.incidentsData.incidents,
+    incidentsStatus: state.incidentsData.incidentsStatus
+  }
+}
+
+export default connect(mapStateToProps, { fetchIncidents })(HomeScreen)
