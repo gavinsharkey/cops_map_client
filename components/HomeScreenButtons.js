@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 
-const HomeScreenButtons = ({fetchIncidents}) => {
+const HomeScreenButtons = ({handleSearchArea}) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={fetchIncidents}>
+      <TouchableOpacity style={styles.button} onPress={handleSearchArea}>
         <Text style={styles.buttonText}>Search This Area</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
@@ -22,12 +22,13 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#243447',
     justifyContent: 'center',
     padding: 15,
     borderRadius: 15
   },
   buttonText: {
+    color: '#fff',
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 15
