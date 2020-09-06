@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopStartRadius: 15,
     borderTopEndRadius: 15,
-    paddingTop: 15
+    paddingTop: 15,
+    flex: 1
   }, 
   casesTitle: {
     textAlign:'center',
