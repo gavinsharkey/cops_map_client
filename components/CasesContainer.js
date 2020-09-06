@@ -18,13 +18,19 @@ const CasesContainer = ({ id }) => {
   }, [id])
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList refreshing={loading} keyExtractor={item => String(item.id)} data={cases} renderItem={({ item }) => (
         <CasesListItem caseData={item} />
       )} />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 15
+  }
+})
 
 export default CasesContainer
 
