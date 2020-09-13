@@ -1,21 +1,28 @@
 import React, { useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import { connect } from 'react-redux'
 import CasesContainer from '../components/CasesContainer'
+import BACKEND_URL from '../constants/BACKEND_URL'
 
-const IncidentScreen = ({ navigation, incident }) => {
-  useEffect(() => {
-    navigation.setOptions({
-      title: incident.title
-    })
-  }, [])
+const IncidentScreen = ({ incident, firstCase, casesStatus }) => {
+  
+  const isLoadingCases = () => {
+    return (casesStatus === 'pending') || (casesStatus === 'loading')
+  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text style={styles.descriptionTitle}>Description:</Text>
-        <Text style={styles.description}>{incident.description}</Text>
-      </View>
+      { isLoadingCases()
+      ? null
+      : (
+        <View style={styles.imageContainer}>
+          <Image style={styles.image} source={{uri: `${BACKEND_URL}${firstCase.media_url}`}} />
+          <View style={styles.imageTextContainer}>
+            <Text style={styles.imageText}>{incident.description}</Text>
+          </View>
+        </View>
+      )
+      }
       <View style={styles.casesContainer}>
         <Text style={styles.casesTitle}>Cases</Text>
         <CasesContainer id={incident.id} />
@@ -30,19 +37,32 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#141d26',
   },
-  textContainer: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 15,
-    margin: 15
+  imageContainer: {
+    height: 200,
+  },
+  imageTextContainer: {
+    position: 'relative',
+    bottom: 50,
+    width: '100%',
+    paddingLeft: 15
+  },
+  imageText: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: '500',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
   },
   casesContainer: {
     backgroundColor: '#fff',
-    borderTopStartRadius: 15,
-    borderTopEndRadius: 15,
+    // borderTopStartRadius: 15,
+    // borderTopEndRadius: 15,
     paddingTop: 15,
     flex: 1
-  }, 
+  },
   casesTitle: {
     textAlign:'center',
     fontSize: 20,
@@ -64,7 +84,9 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    incident: state.incidentsData.incidents.find(incident => incident.id == ownProps.route.params.id)
+    incident: state.incidentsData.incidents.find(incident => incident.id == ownProps.route.params.id),
+    firstCase: state.casesData.cases.find(caseData => caseData.incident_id === ownProps.route.params.id),
+    casesStatus: state.casesData.casesStatus
   }
 }
 
