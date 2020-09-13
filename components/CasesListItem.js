@@ -1,31 +1,55 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import BACKEND_URL from '../constants/BACKEND_URL'
 
-const CasesListItem = props => {
+const CasesListItem = ({caseData}) => {
+  const navigation = useNavigation()
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} source={{ uri: `${BACKEND_URL}${props.caseData.media_url}` }} />
-      <Text>Case {props.caseData.id}</Text>
-    </View>
+    <TouchableOpacity onPress={() => navigation.navigate('Case', {
+      id: caseData.id
+    })}>
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image style={styles.image} source={{ uri: `${BACKEND_URL}${caseData.media_url}` }} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text ellipsizeMode='tail' numberOfLines={1} style={styles.text}>{caseData.description}</Text>
+        </View>
+        <Text>{'>'}</Text>
+      </View>
+    </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: '#141d26',
-    borderWidth: 1,
+    marginBottom: 15,
+    marginHorizontal: 15,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 15,
-    overflow: 'hidden'
+  },
+  textContainer: {
+    width: '60%',
+  },
+  imageContainer: {
+    shadowOffset: { height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    shadowColor: '#666'
   },
   image: {
     width: 100,
     height: 100,
     resizeMode: 'contain',
-    
+    borderRadius: 15,
+  },
+  text: {
+    fontWeight: '700',
+    fontSize: 20
   }
 })
 
