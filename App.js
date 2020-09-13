@@ -5,8 +5,10 @@ import thunk from 'redux-thunk'
 import reducer from './reducers/rootReducer'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import * as COLORS from './constants/COLORS'
 import HomeScreen from './screens/HomeScreen'
 import IncidentScreen from './screens/IncidentScreen';
+import CaseScreen from './screens/CaseScreen'
 
 const store = createStore(reducer, applyMiddleware(thunk))
 
@@ -20,12 +22,20 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
           <Stack.Screen name="Incident" component={IncidentScreen} options={{
             headerStyle: {
-              backgroundColor: '#243447'
+              backgroundColor: COLORS.BlueGrey800
             },
             headerTitleStyle: {
-              color: '#fff'
+              color: COLORS.BlueGrey50
             }
           }} />
+          <Stack.Screen name="Case" component={CaseScreen} options={{
+            headerStyle: {
+              backgroundColor: COLORS.BlueGrey800
+            },
+            headerTitleStyle: {
+              color: COLORS.BlueGrey50
+            }
+          }}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
