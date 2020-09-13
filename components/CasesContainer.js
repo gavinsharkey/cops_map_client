@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, FlatList, StyleSheet } from 'react-native'
-import BACKEND_URL from '../constants/BACKEND_URL'
+import { View, FlatList, StyleSheet } from 'react-native'
+import { connect } from 'react-redux'
+import { fetchCases } from '../actions/casesActions'
 import CasesListItem from './CasesListItem'
 
-const CasesContainer = ({ id }) => {
-  const [loading, setLoading] = useState(true)
-  const [cases, setCases] = useState([])
-
+const CasesContainer = ({ id, cases, casesStatus, fetchCases }) => {
   useEffect(() => {
-    setLoading(true)
-    fetch(`${BACKEND_URL}/incidents/${id}/cases`)
-    .then(resp => resp.json())
-    .then(json => {
-      setCases(json)
-      setLoading(false)
-    })
+    fetchCases(id)
   }, [id])
+
+  const isRefreshing = () => casesStatus === 'loading' ? true : false
 
   return (
     <View style={styles.container}>
-      <FlatList refreshing={loading} keyExtractor={item => String(item.id)} data={cases} renderItem={({ item }) => (
+      <FlatList refreshing={isRefreshing()} keyExtractor={item => String(item.id)} data={cases} renderItem={({ item }) => (
         <CasesListItem caseData={item} />
       )} />
     </View>
@@ -28,9 +22,14 @@ const CasesContainer = ({ id }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 15
+    flex: 1
   }
 })
 
-export default CasesContainer
+const mapStateToProps = state => ({
+  cases: state.casesData.cases,
+  casesStatus: state.casesData.casesStatus
+})
+
+export default connect(mapStateToProps, { fetchCases })(CasesContainer)
 
