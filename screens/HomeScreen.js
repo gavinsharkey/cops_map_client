@@ -2,8 +2,7 @@ import React, { Component} from 'react'
 import { View, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { fetchIncidents } from '../actions/incidentsActions'
-import MapView, { Marker } from 'react-native-maps'
-import * as Location from 'expo-location'
+import MapViewWithLocation from '../components/MapViewWithLocation'
 import HomeScreenButtons from '../components/HomeScreenButtons'
 import HomeScreenMarker from '../components/HomeScreenMarker'
 
@@ -30,18 +29,6 @@ class HomeScreen extends Component {
     }
   }
 
-  componentDidMount() {
-    Location.requestPermissionsAsync()
-    .then(resp => {
-      if (resp.granted) {
-        Location.getLastKnownPositionAsync()
-        .then(resp => {
-          this.map.current.setCamera({ center: { longitude: resp.coords.longitude, latitude: resp.coords.latitude }, altitude: 50000, zoom: 12 })
-        })
-      }
-    })
-  }
-
   handleRegionChange = region => {
     this.setState({
       region
@@ -59,12 +46,12 @@ class HomeScreen extends Component {
     const { navigation, incidents } = this.props
     return (
       <View style={styles.screen}>
-        <MapView loadingEnabled ref={this.map} onRegionChange={this.handleRegionChange} style={{...StyleSheet.absoluteFill}}>
+        <MapViewWithLocation onRegionChange={this.handleRegionChange}>
           {incidents.map(incident => (
             <HomeScreenMarker navigation={navigation} key={incident.id} incident={incident} />
           ))}
-        </MapView>
-        <HomeScreenButtons handleSearchArea={this.handleSearchArea} />
+        </MapViewWithLocation>
+        <HomeScreenButtons navigation={navigation} handleSearchArea={this.handleSearchArea} />
       </View>
     )
   }
