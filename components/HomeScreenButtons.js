@@ -1,13 +1,17 @@
 import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 
-const HomeScreenButtons = ({handleSearchArea}) => {
+const HomeScreenButtons = ({handleSearchArea, navigation}) => {
+  const handleNavigation = () => {
+    navigation.navigate('IncidentForm')
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={handleSearchArea}>
         <Text style={styles.buttonText}>Search This Area</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleNavigation}>
         <Text style={styles.buttonText}>Add Indicent</Text>
       </TouchableOpacity>
     </View>
