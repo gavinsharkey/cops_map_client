@@ -8,6 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import * as COLORS from './constants/COLORS'
 import HomeScreen from './screens/HomeScreen'
 import IncidentScreen from './screens/IncidentScreen';
+import IncidentFormScreen from './screens/IncidentFormScreen'
 import CaseScreen from './screens/CaseScreen'
 
 const store = createStore(reducer, applyMiddleware(thunk))
@@ -36,6 +37,7 @@ export default function App() {
               color: COLORS.BlueGrey50
             }
           }}/>
+          <Stack.Screen name="IncidentForm" component={IncidentFormScreen} options={{headerShown: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
