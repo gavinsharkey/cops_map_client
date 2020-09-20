@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'react-native'
 import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
@@ -10,6 +11,7 @@ import HomeScreen from './screens/HomeScreen'
 import IncidentScreen from './screens/IncidentScreen';
 import IncidentFormScreen from './screens/IncidentFormScreen'
 import CaseScreen from './screens/CaseScreen'
+import CaseFormScreen from './screens/CaseFormScreen';
 
 const store = createStore(reducer, applyMiddleware(thunk))
 
@@ -22,9 +24,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
           <Stack.Screen name="Incident" component={IncidentScreen} options={{
-            headerStyle: {
-              backgroundColor: COLORS.BlueGrey800
-            },
+            headerTransparent: true,
             headerTitleStyle: {
               color: COLORS.BlueGrey50
             }
