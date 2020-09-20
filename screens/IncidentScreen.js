@@ -60,11 +60,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     // borderTopStartRadius: 15,
     // borderTopEndRadius: 15,
-    paddingTop: 15,
+    padding: 15,
     flex: 1
   },
   casesTitle: {
-    textAlign:'center',
     fontSize: 20,
     marginBottom: 15
   },
