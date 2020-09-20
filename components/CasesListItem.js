@@ -26,7 +26,6 @@ const CasesListItem = ({caseData}) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 15,
-    marginHorizontal: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
