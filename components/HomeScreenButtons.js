@@ -2,16 +2,18 @@ import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 
 const HomeScreenButtons = ({handleSearchArea, navigation}) => {
-  const handleNavigation = () => {
-    navigation.navigate('IncidentForm')
-  }
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handleSearchArea}>
-        <Text style={styles.buttonText}>Search This Area</Text>
+    <View style={styles.buttonGroup}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSearchArea}
+      >
+        <Text style={styles.buttonText}>Search Area</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleNavigation}>
+      <TouchableOpacity
+        style={{...styles.button, borderRightWidth: 0}}
+        onPress={() => navigation.navigate('IncidentForm')}
+      >
         <Text style={styles.buttonText}>Add Indicent</Text>
       </TouchableOpacity>
     </View>
@@ -19,23 +21,25 @@ const HomeScreenButtons = ({handleSearchArea, navigation}) => {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '90%',
+  buttonGroup: {
+    overflow: 'hidden',
+    borderRadius: 15,
     flexDirection: 'row',
+    justifyContent: "center",
+    width: '90%'
   },
   button: {
-    flex: 1,
-    marginHorizontal: 5,
-    backgroundColor: '#243447',
-    justifyContent: 'center',
+    borderRightWidth: 1,
+    borderRightColor: '#fff',
     padding: 15,
-    borderRadius: 15
+    backgroundColor: '#243447',
+    flex: 1
   },
   buttonText: {
     color: '#fff',
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 15
+    fontSize: 20
   }
 })
 
