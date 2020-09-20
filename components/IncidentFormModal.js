@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Animated, View, Text, TextInput, StyleSheet, useWindowDimensions, Button, TouchableOpacity, Image } from 'react-native'
+import { Animated, View, Text, TextInput, StyleSheet, useWindowDimensions, Button, TouchableOpacity, Image, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
+import BACKEND_URL from '../constants/BACKEND_URL'
 
-const IncidentFormModal = ({closeModal}) => {
+const IncidentFormModal = ({closeModal, navigation, region: { coordinate: { longitude, latitude } }}) => {
   const { height: windowHeight, width: windowWidth} = useWindowDimensions()
   const modalAnim = useRef(new Animated.Value(windowHeight)).current
 
@@ -18,7 +19,11 @@ const IncidentFormModal = ({closeModal}) => {
       useNativeDriver: false
     }).start()
   }
-
+  
+  useEffect(() => {
+    fadeUp()
+  }, [])
+  
   const pickImage = () => {
     ImagePicker.requestCameraRollPermissionsAsync()
     .then(resp => {
@@ -33,8 +38,43 @@ const IncidentFormModal = ({closeModal}) => {
     })
   }
 
-  console.log(image)
+  const isValidForm = () => {
+    return !!( locationDesc.length > 0 && title.length > 0 && description.length > 0 
+      && image.uri)
+  }
+  
 
+  const handleSubmit = () => {
+    if (!isValidForm()) {
+      Alert.alert(
+        'Form Invalid',
+        'Please fill out all form fields and add an image'
+        )
+      return
+    }
+    const [imageName, imageType] = image.uri.split('.')
+    const form = new FormData()
+    form.append('incident[description]', locationDesc)
+    form.append('incident[longitude]', longitude)
+    form.append('incident[latitude]', latitude)
+    form.append('incident[cases_attributes][][title]', title)
+    form.append('incident[cases_attributes][][description]', description)
+    form.append('incident[cases_attributes][][media]', {
+      uri: image.uri,
+      name: `${title}.${imageType}`,
+      type: `image/${imageType}`
+    })
+    fetch(`${BACKEND_URL}/incidents`, {
+      method: 'POST',
+      body: form
+    })
+    .then(resp => resp.json())
+    .then(json => {
+      if (!json.errors) {
+        navigation.popToTop()
+      }
+    })
+  }
   // const fadeDown = () => {
   //   Animated.timing(modalAnim, {
   //     toValue: windowHeight,
@@ -43,10 +83,6 @@ const IncidentFormModal = ({closeModal}) => {
   //   }).start()
   // }
 
-  useEffect(() => {
-    fadeUp()
-  }, [])
-
   return (
     <Animated.ScrollView style={{...styles.modalContainer, top: modalAnim}}>
       <Button title="Go Back" onPress={closeModal} />
@@ -54,20 +90,21 @@ const IncidentFormModal = ({closeModal}) => {
         <View style={styles.inputGroup}>
           <Text style={styles.header}>Describe location:</Text>
           <Text style={styles.subheader}>A short description of the location</Text>
-          <TextInput style={styles.inputText} onChangeText={setLocationDesc} value={locationDesc} />
+          <TextInput style={styles.inputText} maxLength={30} onChangeText={setLocationDesc} value={locationDesc} />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.header}>Title:</Text>
           <Text style={styles.subheader}>A short description of the incident</Text>
-          <TextInput style={styles.inputText} onChangeText={setTitle} value={title} />
+          <TextInput style={styles.inputText} maxLength={30} onChangeText={setTitle} value={title} />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.header}>Description:</Text>
           <Text style={styles.subheader}>Describe the incident in full detail</Text>
-          <TextInput style={styles.inputText} onChangeText={setDescription} value={description} />
+          <TextInput style={styles.inputText} multiline onChangeText={setDescription} value={description} />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.header}>Image:</Text>
+          <Text style={styles.subheader}>Add an image on the incident</Text>
           <View style={styles.imageBox}>
             <TouchableOpacity onPress={pickImage}>
               {image.uri
@@ -78,7 +115,7 @@ const IncidentFormModal = ({closeModal}) => {
           </View>
         </View>
         <View style={{...styles.inputGroup, flexDirection: 'row', justifyContent: 'center'}}>
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>
@@ -116,7 +153,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#ddd',
     borderRadius: 30,
-    fontSize: 20
+    fontSize: 15
   },
   imageBox: {
     marginTop: 10,
