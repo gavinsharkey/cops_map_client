@@ -1,33 +1,66 @@
-import React, { useEffect } from 'react'
-import { View, Text, StyleSheet, Image } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Image, Button } from 'react-native'
 import { connect } from 'react-redux'
 import CasesContainer from '../components/CasesContainer'
+import CaseFormScreen from './CaseFormScreen'
 import BACKEND_URL from '../constants/BACKEND_URL'
+import * as COLORS from '../constants/COLORS'
 
-const IncidentScreen = ({ incident, firstCase, casesStatus }) => {
-  
+const IncidentScreen = ({ navigation, incident, firstCase, casesStatus }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const openCaseFormModal = () => {
+    navigation.setOptions({
+      headerShown: false
+    })
+    setIsModalOpen(true)
+  }
+
+  const closeCaseFormModal = () => {
+    navigation.setOptions({
+      headerShown: true
+    })
+    setIsModalOpen(false)
+  }
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => {
+        return (
+          <Button 
+            title="Add Case"
+            color={COLORS.BlueGrey50}
+            onPress={() => openCaseFormModal()}
+          />
+        )
+      }
+    })
+  })
+
   const isLoadingCases = () => {
     return (casesStatus === 'pending') || (casesStatus === 'loading')
   }
 
   return (
-    <View style={styles.container}>
-      { isLoadingCases()
-      ? null
-      : (
-        <View style={styles.imageContainer}>
-          <Image style={styles.image} source={{uri: `${BACKEND_URL}${firstCase.media_url}`}} />
-          <View style={styles.imageTextContainer}>
-            <Text style={styles.imageText}>{incident.description}</Text>
+    <>
+      <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            {isLoadingCases() ? null : <Image style={styles.image} source={{uri: `${BACKEND_URL}${firstCase.media_url}`}} /> }
+            <View style={styles.imageTextContainer}>
+              <Text style={styles.imageText}>{incident.description}</Text>
+            </View>
           </View>
+        <View style={styles.casesContainer}>
+          <Text style={styles.casesTitle}>Cases</Text>
+          <CasesContainer id={incident.id} />
         </View>
-      )
-      }
-      <View style={styles.casesContainer}>
-        <Text style={styles.casesTitle}>Cases</Text>
-        <CasesContainer id={incident.id} />
       </View>
-    </View>
+      { isModalOpen
+        ? <CaseFormScreen
+            incidentId={incident.id}
+            closeModal={closeCaseFormModal} />
+        : null }
+    </>
   )
 }
 
@@ -38,13 +71,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#141d26',
   },
   imageContainer: {
-    height: 200,
+    height: 300,
+    backgroundColor: '#eee'
   },
   imageTextContainer: {
     position: 'relative',
+    height: 50,
     bottom: 50,
     width: '100%',
-    paddingLeft: 15
+    paddingLeft: 15,
+    backgroundColor: `${COLORS.BlueGrey900}aa`,
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   imageText: {
     color: '#fff',
