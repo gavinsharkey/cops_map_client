@@ -14,6 +14,11 @@ export default (state = {
         cases: action.payload,
         casesStatus: 'ok'
       }
+    case 'ADD_CASE':
+      return {
+        ...state,
+        cases: [...state.cases, action.payload]
+      }
     case 'ERROR_FETCHING_CASES':
       return {
         ...state,

@@ -1,5 +1,9 @@
 import BACKEND_URL from '../constants/BACKEND_URL'
 
+export const addCase = caseData => {
+  return { type: 'ADD_CASE', payload: caseData }
+}
+
 export const fetchCases = id => {
   return dispatch => {
     dispatch({type: 'LOADING_CASES'})
