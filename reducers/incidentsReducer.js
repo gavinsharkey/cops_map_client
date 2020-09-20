@@ -15,6 +15,11 @@ export default (state = {
         incidents: action.payload,
         incidentsStatus: 'ok'
       }
+    case 'ADD_INCIDENT':
+      return {
+        ...state,
+        incidents: [...state.incidents, action.payload]
+      }
     case 'ERROR_FETCHING_INCIDENTS':
       return {
         ...state,
