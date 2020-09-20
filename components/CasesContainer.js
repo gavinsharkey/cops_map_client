@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { View, FlatList, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { fetchCases } from '../actions/casesActions'
