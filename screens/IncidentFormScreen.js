@@ -34,7 +34,7 @@ const IncidentFormScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
       </View>
-      {modalOpen ? <IncidentFormModal closeModal={() => setModalOpen(false)} /> : null}
+      {modalOpen ? <IncidentFormModal navigation={navigation} region={region} closeModal={() => setModalOpen(false)} /> : null}
     </View>
   )
 }
