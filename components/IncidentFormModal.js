@@ -1,29 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Animated, View, Text, TextInput, StyleSheet, useWindowDimensions, Button, TouchableOpacity, Image, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
+import { connect } from 'react-redux'
+import Modal from './Modal'
+import { addIncident } from '../actions/incidentsActions'
 import BACKEND_URL from '../constants/BACKEND_URL'
 
-const IncidentFormModal = ({closeModal, navigation, region: { coordinate: { longitude, latitude } }}) => {
-  const { height: windowHeight, width: windowWidth} = useWindowDimensions()
-  const modalAnim = useRef(new Animated.Value(windowHeight)).current
-
+const IncidentFormModal = ({closeModal, navigation, region: { coordinate: { longitude, latitude } }, addIncident}) => {
   const [locationDesc, setLocationDesc] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [image, setImage] = useState({})
 
-  const fadeUp = () => {
-    Animated.timing(modalAnim, {
-      toValue: windowHeight * 0.08,
-      duration: 500,
-      useNativeDriver: false
-    }).start()
-  }
-  
-  useEffect(() => {
-    fadeUp()
-  }, [])
-  
   const pickImage = () => {
     ImagePicker.requestCameraRollPermissionsAsync()
     .then(resp => {
@@ -71,21 +59,21 @@ const IncidentFormModal = ({closeModal, navigation, region: { coordinate: { long
     .then(resp => resp.json())
     .then(json => {
       if (!json.errors) {
+        addIncident(json)
         navigation.popToTop()
+      } else {
+        Alert.alert(
+          'Server Error',
+          'There was a problem submitting your incident, please try again.'
+        )
       }
     })
+    .catch(err => Alert.alert('Fetch Error', err))
   }
-  // const fadeDown = () => {
-  //   Animated.timing(modalAnim, {
-  //     toValue: windowHeight,
-  //     duration: 500,
-  //     useNativeDriver: false
-  //   }).start()
-  // }
+  
 
   return (
-    <Animated.ScrollView style={{...styles.modalContainer, top: modalAnim}}>
-      <Button title="Go Back" onPress={closeModal} />
+    <Modal closeModal={closeModal} percentOfScreen={0.08}> 
       <View style={styles.container}>
         <View style={styles.inputGroup}>
           <Text style={styles.header}>Describe location:</Text>
@@ -120,7 +108,7 @@ const IncidentFormModal = ({closeModal, navigation, region: { coordinate: { long
           </TouchableOpacity>
         </View>
       </View>
-    </Animated.ScrollView>
+    </Modal>
   )
 }
 
@@ -178,4 +166,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default IncidentFormModal
+export default connect(null, { addIncident })(IncidentFormModal)
